@@ -1,0 +1,42 @@
+.tts-form {
+    padding: 30px;
+    border-top: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.tts-inputField {
+    width: 100% !important;
+    margin: 20px 0px 10px 0;
+    color: #0a2957 !important;
+}
+
+.tts-labelField {
+    margin-bottom: 10px;
+    width: 100% !important;
+    color: red;
+}
+
+.tts-btn-submit {
+    width: 40%;
+    padding: 14px 10px !important;
+    font-family: 'Ubuntu' !important;
+    color: #ffffff !important;
+    margin: auto !important;
+    background-color: rgba(244, 67, 54, 1) !important;
+}
+
+.tts-btn-submit:disabled {
+    background-color: rgba(244, 67, 54, .5) !important;
+    color: #ffffff !important;
+}
+
+.tts-labelFormControl {
+    margin: 10px 0;
+}
+
+.tts-checkbox {
+    font-family: "Roboto";
+    font-size: 12px !important;
+}
