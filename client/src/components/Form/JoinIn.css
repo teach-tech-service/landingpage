@@ -8,14 +8,18 @@
 
 .tts-inputField {
     width: 100% !important;
-    margin: 20px 0px 10px 0;
+    margin: 10px 0px 10px 0 !important;
     color: #0a2957 !important;
 }
 
 .tts-labelField {
-    margin-bottom: 10px;
     width: 100% !important;
-    color: red;
+    margin: 8px 12px 8px !important;
+    color: #f44336 !important;
+}
+
+.tts-labelField-d {
+    display: none;
 }
 
 .tts-btn-submit {
@@ -23,7 +27,7 @@
     padding: 14px 10px !important;
     font-family: 'Ubuntu' !important;
     color: #ffffff !important;
-    margin: auto !important;
+    margin: 25px auto !important;
     background-color: rgba(244, 67, 54, 1) !important;
 }
 

@@ -1,24 +1,14 @@
 import React from 'react';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Typography from '@material-ui/core/Typography';
 import FormHelperText from '@material-ui/core/FormHelperText'
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 import './JoinIn.css';
-
-const emailRegex = RegExp(
-    /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-);
 
 export default class JoinIn extends React.Component {
     constructor(props) {
@@ -26,10 +16,9 @@ export default class JoinIn extends React.Component {
         this.state = {
             imie: '',
             email: '',
-            password: '',
-            nameError: '',
-            emailError: '',
-            passwordErr: '',
+            lastName: '',
+            nameError: null,
+            emailError: null,
             checkErrName: false,
             checkErrEmail: false,
             checkErrPass: false,
@@ -43,19 +32,17 @@ export default class JoinIn extends React.Component {
         const target = event.target;
         const name = target.name;
         this.setState({ [name]: event.target.value }, () => {
-            if (name == "imie") {
+            if (name === "imie") {
                 this.validateName();
-            } else if (name == "email") {
+            } else if (name === "email") {
                 this.validateEmail();
-            } else {
-                this.validatePass();
             }
         });
     };
 
     validateName = () => {
         const { imie } = this.state;
-        if (imie != "") {
+        if (imie !== "") {
             this.setState({
                 nameError: 4 > imie.length >= 1 ? 'Nazwa musi posiadać więcej niż trzy znaki' : null,
                 checkErrName: imie.length > 3 ? false : true,
@@ -72,7 +59,7 @@ export default class JoinIn extends React.Component {
     validateEmail = () => {
         const { email } = this.state;
 
-        if (email != "") {
+        if (email !== "") {
             this.setState({
                 emailError: email.length > 3 ? null : 'Email musi posiadać więcej niż trzy znaki',
                 checkErrEmail: email.length > 3 ? false : true,
@@ -86,46 +73,33 @@ export default class JoinIn extends React.Component {
 
     }
 
-    validatePass = () => {
-        const { password } = this.state;
-
-        if (password != "") {
-            this.setState({
-                passwordErr: password.length > 8 ? null : 'Hasło musi posiadać więcej niż 8 znaki',
-                checkErrPass: password.length > 8 ? false : true,
-            });
-        } else {
-            this.setState({
-                passwordErr: null,
-                checkErrPass: false
-            });
-        }
-
-    }
-
     handleCheckbox = name => e => {
         this.setState({ ...this.state, [name]: e.target.checked })
     }
 
+    sendUser = _ => {
+        const { imie, email, lastName } = this.state;
+        fetch(`http://localhost:5000/api/users?name=${imie}&email=${email}&lastname=${lastName}`)
+            .then(res => res.json())
+            .catch(err => console.log(err))
+    }
+
     handleSubmit = event => {
         event.preventDefault();
-        const { imie, email, checkErrName, checkErrEmail } = this.state;
-        if (checkErrEmail || checkErrName) {
-            alert(`ZJEBAŁEŚ`);
-        } else {
-            alert(`Your state values: \n 
-            name: ${imie} \n 
-            email: ${email}`);
-        }
+        this.sendUser()
+
     };
 
     render() {
-        const { email, password, imie, formControl1, formControl2 } = this.state;
-        const isEnabled = email.length > 3 && password.length > 8 && imie.length > 3 && formControl1 && formControl2;
+        const { email, imie, formControl1, formControl2 } = this.state;
+        const isEnabled = email.length > 3 && imie.length > 3 && formControl1 && formControl2 && !document.getElementById("email-helper-text");
         return (
-
-            <form noValidate onSubmit={this.handleSubmit} className="tts-form">
-                <TextField
+            <ValidatorForm
+                ref="form"
+                onSubmit={this.handleSubmit}
+                className="tts-form"
+            >
+                <TextValidator
                     variant="outlined"
                     margin="normal"
                     required
@@ -137,9 +111,24 @@ export default class JoinIn extends React.Component {
                     onChange={this.handleChange}
                     onBlur={this.validateName}
                     error={this.state.checkErrName}
+                    validators={['required']}
+                    errorMessages={['this field is required']}
                 />
-                <div className='tts-labelField'>{this.state.nameError}</div>
+                <FormHelperText className={this.state.nameError !== null ? "tts-labelField" : "tts-labelField-d"} >{this.state.nameError}</FormHelperText>
                 <TextField
+                    variant="outlined"
+                    margin="normal"
+                    className="tts-inputField"
+                    name="lastName"
+                    label="Nazwisko"
+                    id="lastName"
+                    autoComplete="current-lastName"
+                    validators={['required']}
+                    errorMessages={['this field is required']}
+                    value={this.state.lastName}
+                    onChange={this.handleChange}
+                />
+                <TextValidator
                     variant="outlined"
                     margin="normal"
                     required
@@ -152,25 +141,11 @@ export default class JoinIn extends React.Component {
                     onChange={this.handleChange}
                     onBlur={this.validateEmail}
                     error={this.state.checkErrEmail}
+                    validators={['required', 'isEmail']}
+                    errorMessages={['this field is required', 'Podany email jest nie poprawny']}
                 />
+                <FormHelperText className={this.state.emailError !== null ? "tts-labelField" : "tts-labelField-d"}>{this.state.emailError}</FormHelperText>
 
-                <div className='tts-labelField'>{this.state.emailError}</div>
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    required
-                    className="tts-inputField"
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    value={this.state.password}
-                    onChange={this.handleChange}
-                    onBlur={this.validatePass}
-                    error={this.checkErrPass}
-                />
-                <div className='tts-labelField'>{this.state.passwordErr}</div>
                 <FormControl component="fieldset" className="" required>
                     <FormGroup>
                         <FormControlLabel
@@ -193,8 +168,7 @@ export default class JoinIn extends React.Component {
                 >
                     Zapisz się
                     </Button>
-            </form>
-
+            </ValidatorForm>
         );
     }
 }
